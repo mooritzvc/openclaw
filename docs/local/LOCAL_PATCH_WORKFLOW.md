@@ -115,16 +115,16 @@ Benefits:
 Current:
 
 - `origin` is configured (`openclaw/openclaw`)
-- `myfork` is not configured yet
-- Current token can read account info, but cannot create repositories/forks (`403 Resource not accessible by personal access token`)
+- `myfork` is configured (`mooritzvc/openclaw`)
+- `local/patches` is pushed and tracks `myfork/local/patches`
 
-What you need once to finish setup:
+What you need if re-running setup on another machine:
 
 - A GitHub token with repository write/admin capability for your account
   - for classic PAT: `repo`
   - for fine-grained token: repository `Administration (write)` + `Contents (read)` for fork/create operations
 
-One-time commands after token is fixed:
+One-time commands:
 
 ```bash
 cd /Users/openclaw/openclaw
