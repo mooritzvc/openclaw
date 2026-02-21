@@ -8,7 +8,7 @@ export type CacheTtlEntryData = {
   modelId?: string;
 };
 
-const CACHE_TTL_NATIVE_PROVIDERS = new Set(["anthropic", "moonshot", "zai"]);
+const CACHE_TTL_NATIVE_PROVIDERS = new Set(["anthropic", "claude-bridge", "moonshot", "zai"]);
 const OPENROUTER_CACHE_TTL_MODEL_PREFIXES = [
   "anthropic/",
   "moonshot/",

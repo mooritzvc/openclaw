@@ -9,7 +9,10 @@ import { type SessionEntry, updateSessionStore } from "../../config/sessions.js"
 import type { ExecAsk, ExecHost, ExecSecurity } from "../../infra/exec-approvals.js";
 import { enqueueSystemEvent } from "../../infra/system-events.js";
 import { applyVerboseOverride } from "../../sessions/level-overrides.js";
-import { applyModelOverrideToSessionEntry } from "../../sessions/model-overrides.js";
+import {
+  applyModelOverrideToSessionEntry,
+  rotateSessionBoundaryForModelSwitch,
+} from "../../sessions/model-overrides.js";
 import { formatThinkingLevels, formatXHighModelHint, supportsXHighThinking } from "../thinking.js";
 import type { ReplyPayload } from "../types.js";
 import {
@@ -76,7 +79,6 @@ export async function handleDirectiveOnly(
     provider,
     model,
     initialModelLabel,
-    formatModelSwitchEvent,
     currentThinkLevel,
     currentVerboseLevel,
     currentReasoningLevel,
@@ -328,6 +330,13 @@ export async function handleDirectiveOnly(
       selection: modelSelection,
       profileOverride,
     });
+    const nextLabel = `${modelSelection.provider}/${modelSelection.model}`;
+    rotateSessionBoundaryForModelSwitch({
+      entry: sessionEntry,
+      previousLabel: initialModelLabel,
+      nextLabel,
+      agentId: activeAgentId,
+    });
   }
   if (directives.hasQueueDirective && directives.queueReset) {
     delete sessionEntry.queueMode;
@@ -354,15 +363,6 @@ export async function handleDirectiveOnly(
     await updateSessionStore(storePath, (store) => {
       store[sessionKey] = sessionEntry;
     });
-  }
-  if (modelSelection) {
-    const nextLabel = `${modelSelection.provider}/${modelSelection.model}`;
-    if (nextLabel !== initialModelLabel) {
-      enqueueSystemEvent(formatModelSwitchEvent(nextLabel, modelSelection.alias), {
-        sessionKey,
-        contextKey: `model:${nextLabel}`,
-      });
-    }
   }
   enqueueModeSwitchEvents({
     enqueueSystemEvent,

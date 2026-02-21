@@ -16,7 +16,10 @@ import type { OpenClawConfig } from "../../config/config.js";
 import { type SessionEntry, updateSessionStore } from "../../config/sessions.js";
 import { enqueueSystemEvent } from "../../infra/system-events.js";
 import { applyVerboseOverride } from "../../sessions/level-overrides.js";
-import { applyModelOverrideToSessionEntry } from "../../sessions/model-overrides.js";
+import {
+  applyModelOverrideToSessionEntry,
+  rotateSessionBoundaryForModelSwitch,
+} from "../../sessions/model-overrides.js";
 import { resolveProfileOverride } from "./directive-handling.auth.js";
 import type { InlineDirectives } from "./directive-handling.parse.js";
 import { enqueueModeSwitchEvents } from "./directive-handling.shared.js";
@@ -57,7 +60,6 @@ export async function persistInlineDirectives(params: {
     aliasIndex,
     allowedModelKeys,
     initialModelLabel,
-    formatModelSwitchEvent,
     agentCfg,
   } = params;
   let { provider, model } = params;
@@ -174,12 +176,12 @@ export async function persistInlineDirectives(params: {
           provider = resolved.ref.provider;
           model = resolved.ref.model;
           const nextLabel = `${provider}/${model}`;
-          if (nextLabel !== initialModelLabel) {
-            enqueueSystemEvent(formatModelSwitchEvent(nextLabel, resolved.alias), {
-              sessionKey,
-              contextKey: `model:${nextLabel}`,
-            });
-          }
+          rotateSessionBoundaryForModelSwitch({
+            entry: sessionEntry,
+            previousLabel: initialModelLabel,
+            nextLabel,
+            agentId: activeAgentId,
+          });
           updated = updated || modelUpdated;
         }
       }

@@ -173,6 +173,28 @@ function buildChatCommands(): ChatCommandDefinition[] {
       category: "status",
     }),
     defineChatCommand({
+      key: "cache_report",
+      nativeName: "cache_report",
+      description: "Show cache read/write token report from session logs.",
+      textAliases: ["/cache_report", "/cache-report"],
+      acceptsArgs: true,
+      category: "status",
+      args: [
+        {
+          name: "scope",
+          description: "session | turns",
+          type: "string",
+          choices: ["session", "turns"],
+        },
+        {
+          name: "value",
+          description: "Turn count for turns mode",
+          type: "string",
+        },
+      ],
+      argsMenu: "auto",
+    }),
+    defineChatCommand({
       key: "allowlist",
       description: "List/add/remove allowlist entries.",
       textAlias: "/allowlist",
