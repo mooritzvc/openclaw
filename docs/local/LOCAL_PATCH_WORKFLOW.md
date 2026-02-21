@@ -8,6 +8,7 @@ This repo now uses a two-branch model to keep upstream updates safe.
 - `local/patches`: your local customizations on top of `main`
 
 Current state (2026-02-21):
+
 - `main` at `b703ea367` (matches `origin/main`)
 - `local/patches` is 2 commits ahead of upstream
 
@@ -20,6 +21,7 @@ Current state (2026-02-21):
 ## Standard update workflow
 
 1. Update upstream baseline:
+
 ```bash
 cd /Users/openclaw/openclaw
 git checkout main
@@ -28,12 +30,14 @@ git pull --ff-only origin main
 ```
 
 2. Replay local patches onto fresh upstream:
+
 ```bash
 git checkout local/patches
 git rebase main
 ```
 
 3. If conflicts happen:
+
 ```bash
 # edit conflicted files
 git add <resolved-files>
@@ -43,6 +47,7 @@ git rebase --continue
 ```
 
 4. Run focused validation:
+
 ```bash
 npm run test:fast -- src/auto-reply/reply/commands-cache-report.test.ts src/sessions/model-overrides.test.ts
 ```
@@ -54,6 +59,7 @@ npm run test:fast -- src/auto-reply/reply/commands-cache-report.test.ts src/sess
 - Do not commit local custom changes to `main`.
 - Keep commits small and feature-scoped.
 - Before risky rebases, create a safety branch:
+
 ```bash
 git branch backup/pre-rebase-$(date +%Y%m%d-%H%M)
 ```
@@ -61,6 +67,7 @@ git branch backup/pre-rebase-$(date +%Y%m%d-%H%M)
 ## Local customization changelog
 
 ### Commit: `e2ad2ee7e`
+
 - Message: `feat(auto-reply): add deterministic cache report command`
 - Purpose:
   - Add deterministic `/cache_report` command based on session JSONL usage
@@ -80,6 +87,7 @@ git branch backup/pre-rebase-$(date +%Y%m%d-%H%M)
   - `src/agents/pi-embedded-runner/extra-params.ts`
 
 ### Commit: `706f086eb`
+
 - Message: `test(auto-reply): decouple command harness from full command registry`
 - Purpose:
   - Prevent optional Discord voice dependency import chain from breaking focused unit tests
@@ -97,7 +105,38 @@ For long-term cleanliness, keep a private fork remote and push `local/patches` t
 ```
 
 Benefits:
+
 - Off-machine backup of local customizations
 - Easy rollback if local machine state changes
 - Clear separation of upstream (`origin`) vs your custom branch (`myfork`)
 
+## GitHub remote setup status (this machine)
+
+Current:
+
+- `origin` is configured (`openclaw/openclaw`)
+- `myfork` is not configured yet
+- Current token can read account info, but cannot create repositories/forks (`403 Resource not accessible by personal access token`)
+
+What you need once to finish setup:
+
+- A GitHub token with repository write/admin capability for your account
+  - for classic PAT: `repo`
+  - for fine-grained token: repository `Administration (write)` + `Contents (read)` for fork/create operations
+
+One-time commands after token is fixed:
+
+```bash
+cd /Users/openclaw/openclaw
+export GH_TOKEN=<token-with-repo-create-permission>
+gh repo fork openclaw/openclaw --clone=false --remote=false
+git remote add myfork https://github.com/<your-user>/openclaw.git
+git push -u myfork local/patches
+```
+
+After that, normal push target for local work:
+
+```bash
+git checkout local/patches
+git push myfork local/patches
+```
