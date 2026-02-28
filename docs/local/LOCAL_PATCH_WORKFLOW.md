@@ -7,10 +7,12 @@ This repo now uses a two-branch model to keep upstream updates safe.
 - `main`: pristine upstream mirror (tracks `origin/main` only, no local custom commits)
 - `local/patches`: your local customizations on top of `main`
 
-Current state (2026-02-21):
+Current state is tracked live with:
 
-- `main` at `b703ea367` (matches `origin/main`)
-- `local/patches` is 2 commits ahead of upstream
+```bash
+git checkout local/patches
+git rev-list --left-right --count main...local/patches
+```
 
 ## Why this is safer
 
@@ -54,6 +56,12 @@ npm run test:fast -- src/auto-reply/reply/commands-cache-report.test.ts src/sess
 
 5. Run OpenClaw from `local/patches` for your customized behavior.
 
+Shortcut script:
+
+```bash
+./scripts/local/sync-local-patches.sh
+```
+
 ## Safety rules
 
 - Do not commit local custom changes to `main`.
@@ -65,6 +73,14 @@ git branch backup/pre-rebase-$(date +%Y%m%d-%H%M)
 ```
 
 ## Local customization changelog
+
+Canonical register:
+
+- [PATCH_REGISTER.md](/Users/openclaw/openclaw/docs/local/PATCH_REGISTER.md)
+
+Operations/run log:
+
+- [OPERATIONS_LOG.md](/Users/openclaw/openclaw/docs/local/OPERATIONS_LOG.md)
 
 ### Commit: `e2ad2ee7e`
 
