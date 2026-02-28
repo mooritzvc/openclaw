@@ -8,9 +8,9 @@ import { handleAcpCommand } from "./commands-acp.js";
 import { handleAllowlistCommand } from "./commands-allowlist.js";
 import { handleApproveCommand } from "./commands-approve.js";
 import { handleBashCommand } from "./commands-bash.js";
+import { handleCacheDebugCommand } from "./commands-cache-debug.js";
 import { handleCompactCommand } from "./commands-compact.js";
 import { handleConfigCommand, handleDebugCommand } from "./commands-config.js";
-import { handleCacheReportCommand } from "./commands-cache-report.js";
 import {
   handleCommandsListCommand,
   handleContextCommand,
@@ -146,7 +146,7 @@ export async function handleCommands(params: HandleCommandsParams): Promise<Comm
       handleHelpCommand,
       handleCommandsListCommand,
       handleStatusCommand,
-      handleCacheReportCommand,
+      handleCacheDebugCommand,
       handleAllowlistCommand,
       handleApproveCommand,
       handleContextCommand,

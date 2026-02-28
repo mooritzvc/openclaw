@@ -20,6 +20,22 @@ Use UTC timestamps.
 
 ## Entries
 
+## 2026-02-28 19:58 UTC - CacheDebug rename and tilde path incident fix
+
+- Operator: Codex
+- Branch: `local/patches`
+- Action:
+  - renamed cache command wiring from `cache_report`/`CacheReport` to `cache_debug`/`CacheDebug`
+  - updated command tests and registry wiring for `/cache_debug` and `/cache-debug`
+  - fixed FS tool path normalization so `~` expands correctly for `read`/`write`/`edit`
+  - added local incident report `INC-2026-02-28-02` for the tilde edit failure
+- Result:
+  - cache command rename is consistent across runtime + tests
+  - edit calls using `~/.openclaw/...` no longer fail due to literal tilde paths
+  - focused test suite passed for command + FS tool paths
+- Follow-ups:
+  - none
+
 ## 2026-02-28 18:33 UTC - Incident report capture and register bootstrap
 
 - Operator: Codex

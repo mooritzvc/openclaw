@@ -173,10 +173,10 @@ function buildChatCommands(): ChatCommandDefinition[] {
       category: "status",
     }),
     defineChatCommand({
-      key: "cache_report",
-      nativeName: "cache_report",
+      key: "cache_debug",
+      nativeName: "cache_debug",
       description: "Show cache read/write token report from session logs.",
-      textAliases: ["/cache_report", "/cache-report"],
+      textAliases: ["/cache_debug", "/cache-debug"],
       acceptsArgs: true,
       category: "status",
       args: [

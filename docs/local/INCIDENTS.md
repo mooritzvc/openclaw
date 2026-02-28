@@ -15,6 +15,7 @@ Severity scale:
 
 ## Resolved
 
-| Date       | Incident ID         | Severity | Summary                                                 | Status   | Report                                                            |
-| ---------- | ------------------- | -------- | ------------------------------------------------------- | -------- | ----------------------------------------------------------------- |
-| 2026-02-28 | `INC-2026-02-28-01` | `SEV-3`  | Gateway restart churn during cache-report patch rollout | Resolved | `docs/local/incidents/INC-2026-02-28-01-gateway-restart-churn.md` |
+| Date       | Incident ID         | Severity | Summary                                                 | Status   | Report                                                              |
+| ---------- | ------------------- | -------- | ------------------------------------------------------- | -------- | ------------------------------------------------------------------- |
+| 2026-02-28 | `INC-2026-02-28-01` | `SEV-3`  | Gateway restart churn during cache-report patch rollout | Resolved | `docs/local/incidents/INC-2026-02-28-01-gateway-restart-churn.md`   |
+| 2026-02-28 | `INC-2026-02-28-02` | `SEV-4`  | Edit tool failed for tilde workspace path               | Resolved | `docs/local/incidents/INC-2026-02-28-02-tilde-edit-path-failure.md` |

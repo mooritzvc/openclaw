@@ -51,7 +51,7 @@ git rebase --continue
 4. Run focused validation:
 
 ```bash
-npm run test:fast -- src/auto-reply/reply/commands-cache-report.test.ts src/sessions/model-overrides.test.ts
+npm run test:fast -- src/auto-reply/reply/commands-cache-debug.test.ts src/sessions/model-overrides.test.ts
 ```
 
 5. Run OpenClaw from `local/patches` for your customized behavior.

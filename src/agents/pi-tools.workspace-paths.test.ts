@@ -86,6 +86,45 @@ describe("workspace path resolution", () => {
     });
   });
 
+  it("expands tilde paths for read/write/edit", async () => {
+    await withTempDir("openclaw-home-", async (homeDir) => {
+      const workspaceDir = path.join(homeDir, "workspace");
+      await fs.mkdir(workspaceDir, { recursive: true });
+
+      const previousHome = process.env.OPENCLAW_HOME;
+      process.env.OPENCLAW_HOME = homeDir;
+
+      try {
+        const tools = createOpenClawCodingTools({ workspaceDir });
+        const { readTool, writeTool, editTool } = expectReadWriteEditTools(tools);
+        const tildePath = "~/workspace/tilde.txt";
+
+        await writeTool.execute("ws-tilde-write", {
+          path: tildePath,
+          content: "hello world",
+        });
+
+        const readResult = await readTool.execute("ws-tilde-read", { path: tildePath });
+        expect(getTextContent(readResult)).toContain("hello world");
+
+        await editTool.execute("ws-tilde-edit", {
+          path: tildePath,
+          oldText: "world",
+          newText: "openclaw",
+        });
+
+        const finalContent = await fs.readFile(path.join(workspaceDir, "tilde.txt"), "utf8");
+        expect(finalContent).toBe("hello openclaw");
+      } finally {
+        if (previousHome === undefined) {
+          delete process.env.OPENCLAW_HOME;
+        } else {
+          process.env.OPENCLAW_HOME = previousHome;
+        }
+      }
+    });
+  });
+
   it("defaults exec cwd to workspaceDir when workdir is omitted", async () => {
     await withTempDir("openclaw-ws-", async (workspaceDir) => {
       const tools = createOpenClawCodingTools({

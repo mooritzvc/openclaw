@@ -6,6 +6,7 @@ import { createEditTool, createReadTool, createWriteTool } from "@mariozechner/p
 import { SafeOpenError, openFileWithinRoot, writeFileWithinRoot } from "../infra/fs-safe.js";
 import { detectMime } from "../media/mime.js";
 import { sniffMimeFromBase64 } from "../media/sniff-mime-from-base64.js";
+import { resolveUserPath } from "../utils.js";
 import type { ImageSanitizationLimits } from "./image-sanitization.js";
 import type { AnyAgentTool } from "./pi-tools.types.js";
 import { assertSandboxPath } from "./sandbox-paths.js";
@@ -410,6 +411,22 @@ function normalizeTextLikeParam(record: Record<string, unknown>, key: string) {
   }
 }
 
+function normalizePathLikeParam(record: Record<string, unknown>, key: string) {
+  const value = record[key];
+  if (typeof value !== "string") {
+    return;
+  }
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return;
+  }
+  if (trimmed.startsWith("~")) {
+    record[key] = resolveUserPath(trimmed);
+  } else {
+    record[key] = trimmed;
+  }
+}
+
 // Normalize tool parameters from Claude Code conventions to pi-coding-agent conventions.
 // Claude Code uses file_path/old_string/new_string while pi-coding-agent uses path/oldText/newText.
 // This prevents models trained on Claude Code from getting stuck in tool-call loops.
@@ -439,6 +456,8 @@ export function normalizeToolParams(params: unknown): Record<string, unknown> | 
   normalizeTextLikeParam(normalized, "content");
   normalizeTextLikeParam(normalized, "oldText");
   normalizeTextLikeParam(normalized, "newText");
+  normalizePathLikeParam(normalized, "path");
+  normalizePathLikeParam(normalized, "file_path");
   return normalized;
 }
 

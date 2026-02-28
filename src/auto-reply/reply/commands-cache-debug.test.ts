@@ -9,7 +9,7 @@ import { buildCommandTestParams } from "./commands.test-harness.js";
 let testDir = "";
 
 beforeAll(async () => {
-  testDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-cache-report-"));
+  testDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-cache-debug-"));
 });
 
 afterAll(async () => {
@@ -39,7 +39,7 @@ function buildParams(commandBody: string, sessionFile: string) {
   return params;
 }
 
-describe("/cache_report native command", () => {
+describe("/cache_debug native command", () => {
   it("reports total input, cache read/write, uncached input, and output", async () => {
     const sessionFile = path.join(testDir, "sessions", "one.jsonl");
     await writeTranscript(sessionFile, [
@@ -61,11 +61,11 @@ describe("/cache_report native command", () => {
       }),
     ]);
 
-    const result = await handleCommands(buildParams("/cache_report session", sessionFile));
+    const result = await handleCommands(buildParams("/cache_debug session", sessionFile));
     const text = result.reply?.text ?? "";
 
     expect(result.shouldContinue).toBe(false);
-    expect(text).toContain("🧊 Cache Report");
+    expect(text).toContain("🧊 Cache Debug");
     expect(text).toContain("Tokens: 1.5k in · 15 out");
     expect(text).toContain("Uncached input: 150 (150)");
     expect(text).toContain("Cache: 1.4k read · 10 write");
@@ -98,7 +98,7 @@ describe("/cache_report native command", () => {
       }),
     ]);
 
-    const result = await handleCommands(buildParams("/cache_report", sessionFile));
+    const result = await handleCommands(buildParams("/cache_debug", sessionFile));
     const text = result.reply?.text ?? "";
 
     expect(result.shouldContinue).toBe(false);
@@ -107,7 +107,7 @@ describe("/cache_report native command", () => {
     expect(text).toContain("Session totals: 2.0k in · 900 read");
   });
 
-  it("intercepts wrapped messages that include /cache_report at the end", async () => {
+  it("intercepts wrapped messages that include /cache_debug at the end", async () => {
     const sessionFile = path.join(testDir, "sessions", "three.jsonl");
     await writeTranscript(sessionFile, [
       JSON.stringify({
@@ -124,16 +124,16 @@ describe("/cache_report native command", () => {
 \`\`\`json
 {"message_id":"1","sender":"x"}
 \`\`\`
-/cache_report`;
+/cache_debug`;
     const result = await handleCommands(buildParams(wrappedBody, sessionFile));
     const text = result.reply?.text ?? "";
 
     expect(result.shouldContinue).toBe(false);
-    expect(text).toContain("🧊 Cache Report");
+    expect(text).toContain("🧊 Cache Debug");
     expect(text).toContain("Cache: 70 read · 10 write");
   });
 
-  it("accepts /cache-report slash alias", async () => {
+  it("accepts /cache-debug slash alias", async () => {
     const sessionFile = path.join(testDir, "sessions", "alias.jsonl");
     await writeTranscript(sessionFile, [
       JSON.stringify({
@@ -146,9 +146,9 @@ describe("/cache_report native command", () => {
       }),
     ]);
 
-    const result = await handleCommands(buildParams("/cache-report session", sessionFile));
+    const result = await handleCommands(buildParams("/cache-debug session", sessionFile));
     expect(result.shouldContinue).toBe(false);
-    expect(result.reply?.text ?? "").toContain("🧊 Cache Report");
+    expect(result.reply?.text ?? "").toContain("🧊 Cache Debug");
   });
 
   it("does not trigger on plain-text cache report phrase", async () => {

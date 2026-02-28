@@ -6,10 +6,10 @@ import { resolveSessionFilePath, resolveSessionFilePathOptions } from "../../con
 import { logVerbose } from "../../globals.js";
 import type { CommandHandler } from "./commands-types.js";
 
-type CacheReportScope = "last-compaction" | "session" | "turns";
+type CacheDebugScope = "last-compaction" | "session" | "turns";
 
 type ParsedArgs = {
-  scope: CacheReportScope;
+  scope: CacheDebugScope;
   turns: number;
 };
 
@@ -41,7 +41,7 @@ type ParsedTranscript = {
 };
 
 const DEFAULT_TURNS = 10;
-const CACHE_REPORT_USAGE = "⚙️ Usage: /cache_report [session|turns N]";
+const CACHE_DEBUG_USAGE = "⚙️ Usage: /cache_debug [session|turns N]";
 
 function formatInt(value: number): string {
   return Math.max(0, Math.round(value)).toLocaleString("en-US");
@@ -63,9 +63,9 @@ function formatPct(value: number): string {
   return `${safe.toFixed(2)}%`;
 }
 
-export function parseCacheReportArgs(normalizedCommandBody: string): ParsedArgs | null {
+export function parseCacheDebugArgs(normalizedCommandBody: string): ParsedArgs | null {
   const trimmed = normalizedCommandBody.trim();
-  const matched = matchCacheReportCommand(trimmed);
+  const matched = matchCacheDebugCommand(trimmed);
   if (!matched) {
     return null;
   }
@@ -88,10 +88,10 @@ export function parseCacheReportArgs(normalizedCommandBody: string): ParsedArgs 
   return { scope: "last-compaction", turns: DEFAULT_TURNS };
 }
 
-function matchCacheReportCommand(body: string): { args: string } | null {
+function matchCacheDebugCommand(body: string): { args: string } | null {
   const commandPatterns = [
-    /(?:^|\s)\/cache_report(?:\s+([\s\S]*))?$/i,
-    /(?:^|\s)\/cache-report(?:\s+([\s\S]*))?$/i,
+    /(?:^|\s)\/cache_debug(?:\s+([\s\S]*))?$/i,
+    /(?:^|\s)\/cache-debug(?:\s+([\s\S]*))?$/i,
   ];
   for (const pattern of commandPatterns) {
     const match = body.match(pattern);
@@ -137,7 +137,7 @@ function detectBreakCandidates(turns: UsageTurn[]): UsageTurn[] {
 
 function sliceByScope(
   parsed: ParsedTranscript,
-  scope: CacheReportScope,
+  scope: CacheDebugScope,
   turnsCount: number,
 ): UsageTurn[] {
   if (scope === "session") {
@@ -154,7 +154,7 @@ function sliceByScope(
 
 function resolveScopeLabel(
   parsed: ParsedTranscript,
-  scope: CacheReportScope,
+  scope: CacheDebugScope,
   turns: number,
 ): string {
   if (scope === "session") {
@@ -172,7 +172,7 @@ function resolveScopeLabel(
 function formatReportText(params: {
   sessionKey: string;
   modelRef: string;
-  scope: CacheReportScope;
+  scope: CacheDebugScope;
   scopeLabel: string;
   compactionCount: number;
   lastCompactionTimestamp?: string;
@@ -182,7 +182,7 @@ function formatReportText(params: {
   recentTurns: UsageTurn[];
 }): string {
   const lines: string[] = [];
-  lines.push("🧊 Cache Report");
+  lines.push("🧊 Cache Debug");
   lines.push(`🧵 Session: ${params.sessionKey}`);
   lines.push(`🧠 Model: ${params.modelRef}`);
   lines.push(`🪟 Scope: ${params.scopeLabel}`);
@@ -320,7 +320,7 @@ async function parseTranscript(sessionFile: string): Promise<ParsedTranscript> {
   return { turns, compactionCount, lastCompactionTurnIndex, lastCompactionTimestamp };
 }
 
-async function buildCacheReportReply(params: {
+async function buildCacheDebugReply(params: {
   commandBodyNormalized: string;
   sessionEntry?: SessionEntry;
   sessionKey: string;
@@ -329,9 +329,9 @@ async function buildCacheReportReply(params: {
   agentId?: string;
   storePath?: string;
 }): Promise<string> {
-  const parsedArgs = parseCacheReportArgs(params.commandBodyNormalized);
+  const parsedArgs = parseCacheDebugArgs(params.commandBodyNormalized);
   if (!parsedArgs) {
-    return CACHE_REPORT_USAGE;
+    return CACHE_DEBUG_USAGE;
   }
 
   const sessionFile = await resolveSessionTranscriptPath({
@@ -341,7 +341,7 @@ async function buildCacheReportReply(params: {
     storePath: params.storePath,
   });
   if (!sessionFile) {
-    return "❌ Cache report unavailable: no session file found.";
+    return "❌ Cache debug unavailable: no session file found.";
   }
 
   let parsed: ParsedTranscript;
@@ -349,16 +349,16 @@ async function buildCacheReportReply(params: {
     parsed = await parseTranscript(sessionFile);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    return `❌ Cache report failed: ${message}`;
+    return `❌ Cache debug failed: ${message}`;
   }
 
   if (parsed.turns.length === 0) {
-    return "❌ Cache report unavailable: no assistant usage rows found in transcript.";
+    return "❌ Cache debug unavailable: no assistant usage rows found in transcript.";
   }
 
   const selectedTurns = sliceByScope(parsed, parsedArgs.scope, parsedArgs.turns);
   if (selectedTurns.length === 0) {
-    return "❌ Cache report unavailable: selected window has no usage rows.";
+    return "❌ Cache debug unavailable: selected window has no usage rows.";
   }
 
   const totals = calculateTotals(selectedTurns);
@@ -380,21 +380,21 @@ async function buildCacheReportReply(params: {
   });
 }
 
-export const handleCacheReportCommand: CommandHandler = async (params, allowTextCommands) => {
+export const handleCacheDebugCommand: CommandHandler = async (params, allowTextCommands) => {
   if (!allowTextCommands) {
     return null;
   }
-  const parsedArgs = parseCacheReportArgs(params.command.commandBodyNormalized);
+  const parsedArgs = parseCacheDebugArgs(params.command.commandBodyNormalized);
   if (!parsedArgs) {
     return null;
   }
   if (!params.command.isAuthorizedSender) {
     logVerbose(
-      `Ignoring /cache_report from unauthorized sender: ${params.command.senderId || "<unknown>"}`,
+      `Ignoring /cache_debug from unauthorized sender: ${params.command.senderId || "<unknown>"}`,
     );
     return { shouldContinue: false };
   }
-  const text = await buildCacheReportReply({
+  const text = await buildCacheDebugReply({
     commandBodyNormalized: params.command.commandBodyNormalized,
     sessionEntry: params.sessionEntry,
     sessionKey: params.sessionKey,
