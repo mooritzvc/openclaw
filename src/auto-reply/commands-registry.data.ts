@@ -173,6 +173,28 @@ function buildChatCommands(): ChatCommandDefinition[] {
       category: "status",
     }),
     defineChatCommand({
+      key: "cache_report",
+      nativeName: "cache_report",
+      description: "Show cache read/write token report from session logs.",
+      textAliases: ["/cache_report", "/cache-report"],
+      acceptsArgs: true,
+      category: "status",
+      args: [
+        {
+          name: "scope",
+          description: "session | turns",
+          type: "string",
+          choices: ["session", "turns"],
+        },
+        {
+          name: "value",
+          description: "Turn count for turns mode",
+          type: "string",
+        },
+      ],
+      argsMenu: "auto",
+    }),
+    defineChatCommand({
       key: "allowlist",
       description: "List/add/remove allowlist entries.",
       textAlias: "/allowlist",
@@ -265,15 +287,15 @@ function buildChatCommands(): ChatCommandDefinition[] {
     defineChatCommand({
       key: "session",
       nativeName: "session",
-      description: "Manage session-level settings (for example /session ttl).",
+      description: "Manage session-level settings (for example /session idle).",
       textAlias: "/session",
       category: "session",
       args: [
         {
           name: "action",
-          description: "ttl",
+          description: "idle | max-age",
           type: "string",
-          choices: ["ttl"],
+          choices: ["idle", "max-age"],
         },
         {
           name: "value",
@@ -305,6 +327,45 @@ function buildChatCommands(): ChatCommandDefinition[] {
         {
           name: "value",
           description: "Additional input (limit/message)",
+          type: "string",
+          captureRemaining: true,
+        },
+      ],
+      argsMenu: "auto",
+    }),
+    defineChatCommand({
+      key: "acp",
+      nativeName: "acp",
+      description: "Manage ACP sessions and runtime options.",
+      textAlias: "/acp",
+      category: "management",
+      args: [
+        {
+          name: "action",
+          description: "Action to run",
+          type: "string",
+          choices: [
+            "spawn",
+            "cancel",
+            "steer",
+            "close",
+            "sessions",
+            "status",
+            "set-mode",
+            "set",
+            "cwd",
+            "permissions",
+            "timeout",
+            "model",
+            "reset-options",
+            "doctor",
+            "install",
+            "help",
+          ],
+        },
+        {
+          name: "value",
+          description: "Action arguments",
           type: "string",
           captureRemaining: true,
         },

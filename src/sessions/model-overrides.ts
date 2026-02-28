@@ -1,4 +1,6 @@
 import type { SessionEntry } from "../config/sessions.js";
+import crypto from "node:crypto";
+import { resolveSessionTranscriptPath } from "../config/sessions.js";
 
 export type ModelOverrideSelection = {
   provider: string;
@@ -73,4 +75,45 @@ export function applyModelOverrideToSessionEntry(params: {
   }
 
   return { updated };
+}
+
+export function rotateSessionBoundaryForModelSwitch(params: {
+  entry: SessionEntry;
+  previousLabel: string;
+  nextLabel: string;
+  agentId?: string;
+}): { rotated: boolean; previousSessionId?: string; nextSessionId?: string } {
+  if (!params.nextLabel || params.nextLabel === params.previousLabel) {
+    return { rotated: false };
+  }
+
+  const previousSessionId = params.entry.sessionId;
+  const nextSessionId = crypto.randomUUID();
+
+  params.entry.sessionId = nextSessionId;
+  params.entry.sessionFile = resolveSessionTranscriptPath(
+    nextSessionId,
+    params.agentId,
+    params.entry.lastThreadId,
+  );
+  params.entry.systemSent = false;
+  params.entry.abortedLastRun = false;
+  params.entry.inputTokens = undefined;
+  params.entry.outputTokens = undefined;
+  params.entry.totalTokens = undefined;
+  params.entry.totalTokensFresh = undefined;
+  params.entry.contextTokens = undefined;
+  params.entry.compactionCount = 0;
+  params.entry.memoryFlushAt = undefined;
+  params.entry.memoryFlushCompactionCount = undefined;
+  params.entry.systemPromptReport = undefined;
+  params.entry.cliSessionIds = undefined;
+  params.entry.claudeCliSessionId = undefined;
+  params.entry.updatedAt = Date.now();
+
+  return {
+    rotated: true,
+    previousSessionId,
+    nextSessionId,
+  };
 }
