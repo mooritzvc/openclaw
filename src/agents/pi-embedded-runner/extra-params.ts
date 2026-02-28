@@ -54,7 +54,6 @@ type CacheRetentionStreamOptions = Partial<SimpleStreamOptions> & {
  *
  * Mapping: "5m" → "short", "1h" → "long"
  *
-<<<<<<< HEAD
  * Applies to:
  * - direct Anthropic-like providers (`anthropic`, `claude-bridge`)
  * - Anthropic Claude models on Bedrock when cache retention is explicitly configured
