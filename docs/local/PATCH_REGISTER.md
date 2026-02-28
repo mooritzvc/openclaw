@@ -18,3 +18,4 @@ How to use:
 | `a7c53de18` | docs/local              | add patch register, operations log, and sync helper            | low                                     | `git revert a7c53de18` |
 | `17dfc6cfe` | rebase hygiene          | remove leftover conflict marker in extra params                | low                                     | `git revert 17dfc6cfe` |
 | `4fa757d71` | auto-reply cache report | require explicit slash command for cache report trigger        | low                                     | `git revert 4fa757d71` |
+| `c94bdab26` | docs/local + scripts    | safe gateway-only restart path and local process guardrails    | low                                     | `git revert c94bdab26` |
