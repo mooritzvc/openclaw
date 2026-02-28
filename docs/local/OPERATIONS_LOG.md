@@ -20,6 +20,19 @@ Use UTC timestamps.
 
 ## Entries
 
+## 2026-02-28 18:33 UTC - Incident report capture and register bootstrap
+
+- Operator: Codex
+- Branch: `local/patches`
+- Action:
+  - created local incident register (`docs/local/INCIDENTS.md`)
+  - wrote incident report for gateway restart churn (`INC-2026-02-28-01`)
+  - linked incident register from local workflow doc
+- Result:
+  - incidents now tracked in-repo with root cause + guardrails
+- Follow-ups:
+  - keep incident register updated for future local ops disruptions
+
 ## 2026-02-28 18:10 UTC - Gateway restart guardrail cleanup
 
 - Operator: Codex

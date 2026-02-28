@@ -90,6 +90,10 @@ Operations/run log:
 
 - [OPERATIONS_LOG.md](/Users/openclaw/openclaw/docs/local/OPERATIONS_LOG.md)
 
+Incident register:
+
+- [INCIDENTS.md](/Users/openclaw/openclaw/docs/local/INCIDENTS.md)
+
 ### Commit: `0309e1956`
 
 - Message: `feat(auto-reply): add deterministic cache report command`
