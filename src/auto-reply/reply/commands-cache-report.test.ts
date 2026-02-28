@@ -132,4 +132,60 @@ describe("/cache_report native command", () => {
     expect(text).toContain("🧊 Cache Report");
     expect(text).toContain("Cache: 70 read · 10 write");
   });
+
+  it("accepts /cache-report slash alias", async () => {
+    const sessionFile = path.join(testDir, "sessions", "alias.jsonl");
+    await writeTranscript(sessionFile, [
+      JSON.stringify({
+        type: "message",
+        timestamp: "2026-02-21T00:00:00.000Z",
+        message: {
+          role: "assistant",
+          usage: { input: 30, output: 5, cacheRead: 70, cacheWrite: 10 },
+        },
+      }),
+    ]);
+
+    const result = await handleCommands(buildParams("/cache-report session", sessionFile));
+    expect(result.shouldContinue).toBe(false);
+    expect(result.reply?.text ?? "").toContain("🧊 Cache Report");
+  });
+
+  it("does not trigger on plain-text cache report phrase", async () => {
+    const sessionFile = path.join(testDir, "sessions", "four.jsonl");
+    await writeTranscript(sessionFile, [
+      JSON.stringify({
+        type: "message",
+        timestamp: "2026-02-21T00:00:00.000Z",
+        message: {
+          role: "assistant",
+          usage: { input: 30, output: 5, cacheRead: 70, cacheWrite: 10 },
+        },
+      }),
+    ]);
+
+    const result = await handleCommands(
+      buildParams("can you give me a cache report?", sessionFile),
+    );
+    expect(result.shouldContinue).toBe(true);
+    expect(result.reply).toBeUndefined();
+  });
+
+  it("does not trigger on unsupported spaced slash alias", async () => {
+    const sessionFile = path.join(testDir, "sessions", "five.jsonl");
+    await writeTranscript(sessionFile, [
+      JSON.stringify({
+        type: "message",
+        timestamp: "2026-02-21T00:00:00.000Z",
+        message: {
+          role: "assistant",
+          usage: { input: 30, output: 5, cacheRead: 70, cacheWrite: 10 },
+        },
+      }),
+    ]);
+
+    const result = await handleCommands(buildParams("/cache report", sessionFile));
+    expect(result.shouldContinue).toBe(true);
+    expect(result.reply).toBeUndefined();
+  });
 });

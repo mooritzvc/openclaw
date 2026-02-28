@@ -1,10 +1,10 @@
 import fs from "node:fs/promises";
-import type { SessionEntry } from "../../config/sessions.js";
-import type { CommandHandler } from "./commands-types.js";
-import { normalizeUsage } from "../../agents/usage.js";
 import { resolveSessionAgentId } from "../../agents/agent-scope.js";
+import { normalizeUsage } from "../../agents/usage.js";
+import type { SessionEntry } from "../../config/sessions.js";
 import { resolveSessionFilePath, resolveSessionFilePathOptions } from "../../config/sessions.js";
 import { logVerbose } from "../../globals.js";
+import type { CommandHandler } from "./commands-types.js";
 
 type CacheReportScope = "last-compaction" | "session" | "turns";
 
@@ -80,7 +80,9 @@ export function parseCacheReportArgs(normalizedCommandBody: string): ParsedArgs 
   }
   if (parts[0] === "turns") {
     const parsed = Number(parts[1]);
-    const turns = Number.isFinite(parsed) ? Math.max(1, Math.min(500, Math.floor(parsed))) : DEFAULT_TURNS;
+    const turns = Number.isFinite(parsed)
+      ? Math.max(1, Math.min(500, Math.floor(parsed)))
+      : DEFAULT_TURNS;
     return { scope: "turns", turns };
   }
   return { scope: "last-compaction", turns: DEFAULT_TURNS };
@@ -90,8 +92,6 @@ function matchCacheReportCommand(body: string): { args: string } | null {
   const commandPatterns = [
     /(?:^|\s)\/cache_report(?:\s+([\s\S]*))?$/i,
     /(?:^|\s)\/cache-report(?:\s+([\s\S]*))?$/i,
-    /(?:^|\s)\/cache\s+report(?:\s+([\s\S]*))?$/i,
-    /(?:^|\s)cache\s+report(?:\s+([\s\S]*))?$/i,
   ];
   for (const pattern of commandPatterns) {
     const match = body.match(pattern);
@@ -152,7 +152,11 @@ function sliceByScope(
   return parsed.turns.slice(parsed.lastCompactionTurnIndex);
 }
 
-function resolveScopeLabel(parsed: ParsedTranscript, scope: CacheReportScope, turns: number): string {
+function resolveScopeLabel(
+  parsed: ParsedTranscript,
+  scope: CacheReportScope,
+  turns: number,
+): string {
   if (scope === "session") {
     return "session";
   }
@@ -185,11 +189,15 @@ function formatReportText(params: {
   lines.push(
     `🧹 Compactions: ${params.compactionCount}${params.lastCompactionTimestamp ? ` · last ${params.lastCompactionTimestamp}` : ""}`,
   );
-  lines.push(`🧮 Tokens: ${formatShort(params.totals.prompt)} in · ${formatShort(params.totals.output)} out`);
+  lines.push(
+    `🧮 Tokens: ${formatShort(params.totals.prompt)} in · ${formatShort(params.totals.output)} out`,
+  );
   lines.push(
     `📦 Cache: ${formatShort(params.totals.cacheRead)} read · ${formatShort(params.totals.cacheWrite)} write · ${formatPct(params.totals.cacheHitPct)} hit`,
   );
-  lines.push(`🔎 Uncached input: ${formatShort(params.totals.input)} (${formatInt(params.totals.input)})`);
+  lines.push(
+    `🔎 Uncached input: ${formatShort(params.totals.input)} (${formatInt(params.totals.input)})`,
+  );
 
   if (params.scope !== "session") {
     lines.push(
@@ -233,7 +241,8 @@ async function resolveSessionTranscriptPath(params: {
   }
 
   try {
-    const resolvedAgentId = params.agentId ?? resolveSessionAgentId({ sessionKey: params.sessionKey });
+    const resolvedAgentId =
+      params.agentId ?? resolveSessionAgentId({ sessionKey: params.sessionKey });
     return resolveSessionFilePath(
       sessionId,
       params.sessionEntry,
