@@ -62,6 +62,14 @@ Shortcut script:
 ./scripts/local/sync-local-patches.sh
 ```
 
+Gateway-only restart (recommended for local patch validation):
+
+```bash
+./scripts/local/restart-gateway-safe.sh
+```
+
+Avoid `scripts/restart-mac.sh` for routine gateway restarts. That path rebuilds the macOS app and can fail on local Swift/toolchain issues unrelated to gateway logic changes.
+
 ## Safety rules
 
 - Do not commit local custom changes to `main`.
@@ -82,7 +90,7 @@ Operations/run log:
 
 - [OPERATIONS_LOG.md](/Users/openclaw/openclaw/docs/local/OPERATIONS_LOG.md)
 
-### Commit: `e2ad2ee7e`
+### Commit: `0309e1956`
 
 - Message: `feat(auto-reply): add deterministic cache report command`
 - Purpose:
@@ -102,13 +110,31 @@ Operations/run log:
   - `src/agents/pi-embedded-runner/cache-ttl.ts`
   - `src/agents/pi-embedded-runner/extra-params.ts`
 
-### Commit: `706f086eb`
+### Commit: `0dfeed1ae`
 
 - Message: `test(auto-reply): decouple command harness from full command registry`
 - Purpose:
   - Prevent optional Discord voice dependency import chain from breaking focused unit tests
 - File:
   - `src/auto-reply/reply/commands.test-harness.ts`
+
+### Commit: `17dfc6cfe`
+
+- Message: `fix(rebase): remove stray conflict marker in extra params`
+- Purpose:
+  - Keep local patch layer clean and rebase-safe after conflict resolution
+- File:
+  - `src/agents/pi-embedded-runner/extra-params.ts`
+
+### Commit: `4fa757d71`
+
+- Message: `fix(auto-reply): require slash command for cache report`
+- Purpose:
+  - Prevent plain text `cache report` from triggering command execution
+  - Limit cache report trigger to explicit slash commands (`/cache_report`, `/cache-report`)
+- Files:
+  - `src/auto-reply/reply/commands-cache-report.ts`
+  - `src/auto-reply/reply/commands-cache-report.test.ts`
 
 ## Optional but recommended: private fork
 

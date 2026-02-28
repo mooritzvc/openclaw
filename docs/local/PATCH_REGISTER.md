@@ -10,8 +10,11 @@ How to use:
 
 | Commit      | Area                    | Why this exists                                                | Risk on upstream rebase                 | Rollback               |
 | ----------- | ----------------------- | -------------------------------------------------------------- | --------------------------------------- | ---------------------- |
-| `e2ad2ee7e` | auto-reply cache report | deterministic `/cache_report` command for local ops visibility | medium (touches reply/model boundaries) | `git revert e2ad2ee7e` |
-| `706f086eb` | test harness            | isolates tests from optional import side effects               | low                                     | `git revert 706f086eb` |
-| `a9457b83a` | docs/local              | local patch workflow documentation                             | low                                     | `git revert a9457b83a` |
-| `d234cf730` | docs/local              | GitHub remote/token scope notes                                | low                                     | `git revert d234cf730` |
-| `204538c87` | docs/local              | confirms myfork tracking setup                                 | low                                     | `git revert 204538c87` |
+| `0309e1956` | auto-reply cache report | deterministic `/cache_report` command for local ops visibility | medium (touches reply/model boundaries) | `git revert 0309e1956` |
+| `0dfeed1ae` | test harness            | isolates tests from optional import side effects               | low                                     | `git revert 0dfeed1ae` |
+| `cfa418d73` | docs/local              | upstream update workflow and local patch changelog             | low                                     | `git revert cfa418d73` |
+| `23925893a` | docs/local              | GitHub remote/token scope notes                                | low                                     | `git revert 23925893a` |
+| `dbd387b18` | docs/local              | confirms myfork tracking setup                                 | low                                     | `git revert dbd387b18` |
+| `a7c53de18` | docs/local              | add patch register, operations log, and sync helper            | low                                     | `git revert a7c53de18` |
+| `17dfc6cfe` | rebase hygiene          | remove leftover conflict marker in extra params                | low                                     | `git revert 17dfc6cfe` |
+| `4fa757d71` | auto-reply cache report | require explicit slash command for cache report trigger        | low                                     | `git revert 4fa757d71` |

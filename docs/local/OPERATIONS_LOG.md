@@ -20,6 +20,21 @@ Use UTC timestamps.
 
 ## Entries
 
+## 2026-02-28 18:10 UTC - Gateway restart guardrail cleanup
+
+- Operator: Codex
+- Branch: `local/patches`
+- Action:
+  - validated local patch branch state against `main`
+  - updated local patch docs to current rebased commit hashes
+  - added `scripts/local/restart-gateway-safe.sh` for gateway-only restarts
+  - documented restart guardrail in `docs/local/LOCAL_PATCH_WORKFLOW.md`
+- Result:
+  - local patch register now matches current commit IDs
+  - future gateway restarts can avoid full mac app rebuild path by default
+- Follow-ups:
+  - use `./scripts/local/restart-gateway-safe.sh` for gateway-only restart/testing
+
 ## 2026-02-28 15:35 UTC - Baseline importer stability pass
 
 - Operator: Codex
