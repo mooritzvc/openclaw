@@ -7,6 +7,15 @@
 - GitHub linking footgun: don’t wrap issue/PR refs like `#24643` in backticks when you want auto-linking. Use plain `#24643` (optionally add full URL).
 - Security advisory analysis: before triage/severity decisions, read `SECURITY.md` to align with OpenClaw's trust model and design boundaries.
 
+## Local Operator Context (Moritz)
+
+- For every new coding/debugging session in this repo, read:
+  - `docs/local/RUNBOOK.md`
+  - `docs/local/DECISIONS.md`
+- Treat mixed repo + host tasks as one **hybrid** workflow unless explicitly told otherwise.
+- Anti-sprawl rule: do not add new scripts/docs unless existing files cannot be extended and the user approved the addition.
+- If a task is run from a nested subdirectory that has its own `AGENTS.md`, treat that nested file as local context only and keep `docs/local/RUNBOOK.md` + `docs/local/DECISIONS.md` as the top-level operating baseline.
+
 ## Project Structure & Module Organization
 
 - Source code: `src/` (CLI wiring in `src/cli`, commands in `src/commands`, web provider in `src/provider-web.ts`, infra in `src/infra`, media pipeline in `src/media`).
